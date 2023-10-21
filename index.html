@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Color wheel</title>
+  <link href="style.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+</head>
+<body>
+<!-- <h1>Color wheel</h1> -->
+<canvas id="canvas" width="800" height="600"></canvas>
+
+<div class="settings">
+  <label for="color-input">1. pick a color</label>
+  <input type="text" id = "hex-input">
+  <div class="rgb-input-block">
+    <input type="text" class="rgb-input" id = "color-r">
+    <input type="text" class="rgb-input" id = "color-g">
+    <input type="text" class="rgb-input" id = "color-b">
+  </div>
+  <label for="combination-input">2. Choose a color combination</label>
+  <select id="combination-input">
+    <option value="Complementary">Complementary</option>
+    <option value="Monochromatic">Monochromatic</option>
+    <option value="Analogous">Analogous</option>
+    <option value="Triadic">Triadic</option>
+    <option value="Tetradic">Tetradic</option>
+  </select>
+
+</div>
+
+<script src="script.js" type="module"></script>
+<script type="module">
+  import { setContext, drawColorWheel, drawInstructions, drawMousePosition, drawPickedColor, hexToHSL, getPointFromHEX, getPointFromRGB, redrawPoints, } from './script.js';
+
+  window.onload = () => {
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    setContext(ctx);
+
+    drawColorWheel();
+    drawInstructions();
+
+
+    const rgb_inputs = document.querySelectorAll('.rgb-input');
+
+    
+    for (let i = 0; i < rgb_inputs.length; i++) {
+      rgb_inputs[i].addEventListener('input', (event) =>{
+        const rgb = {}
+        rgb.r = document.getElementById('color-r').value
+        rgb.g = document.getElementById('color-g').value
+        rgb.b = document.getElementById('color-b').value
+        getPointFromRGB(rgb)
+      });
+}
+
+    const hls_input = document.getElementById('hex-input')
+    hls_input.addEventListener('input', (event)=>{
+      getPointFromHEX(event.target.value)
+    })
+
+    canvas.addEventListener('click', (event) => {
+      drawPickedColor(event.offsetX, event.offsetY);
+      drawMousePosition(event.offsetX, event.offsetY);
+    });
+
+    const combination_select = document.getElementById('combination-input') 
+
+    combination_select.addEventListener('change' , (event)=>{
+      redrawPoints()
+    })
+
+
+
+
+
+
+  };
+</script>
+</body>
+</html>
