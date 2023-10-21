@@ -47,18 +47,25 @@ export function drawColorWheel() {
 }
 
 export function getPointFromHEX(hex){
-  const hsl = hexToHSL(hex)
+  if(hex.length < 7){
+    return;
+  }
+  const hsl = hexToHSL(hex);
   const x = MIDDLE_X + Math.cos(degreeToRadian(hsl.h)) * hsl.s * SCALE;
   const y = MIDDLE_Y - Math.sin(degreeToRadian(hsl.h)) * hsl.s * SCALE;
-  drawMainPoint(x,y)
-  drawCombination(x, y)
-  //setRGBinputsToHex(hex)
+  drawMainPoint(x,y);
+  drawCombination(x, y);
+  setRGBinputsToHex(hex);
 }
 
 export function getPointFromRGB({r, g, b}){
-const hex = rgbToHex({r,g,b})
-setHexInputToRGB({r, g, b})
-getPointFromHEX(hex)
+const hex = rgbToHex({r,g,b});
+setHexInputToRGB({r, g, b});
+const hsl = hexToHSL(hex);
+  const x = MIDDLE_X + Math.cos(degreeToRadian(hsl.h)) * hsl.s * SCALE;
+  const y = MIDDLE_Y - Math.sin(degreeToRadian(hsl.h)) * hsl.s * SCALE;
+  drawMainPoint(x,y);
+  drawCombination(x, y);
 }
 
 function drawCombination(x,y){
@@ -66,59 +73,59 @@ function drawCombination(x,y){
   const radius = Math.sqrt(Math.pow(x - MIDDLE_X, 2) + Math.pow(y - MIDDLE_Y, 2));
   const angle = Math.atan2(y - MIDDLE_Y, x - MIDDLE_X);
 
-  const points = []
+  const points = [];
   if(combination === 'Monochromatic'){
     const oppositeAngle = angle;
     let x2 = MIDDLE_X + radius * Math.cos(oppositeAngle);
     let y2 = MIDDLE_Y + radius * Math.sin(oppositeAngle);
     const color = getColorForPoint(x2, y2);
-    color.l += 0.1;
+    color.l += 0.05;
     points.push({x: x2, y:y2, color: color});
 
   }else if(combination === 'Complementary'){
     const oppositeAngle = angle + Math.PI;
     let x2 = MIDDLE_X + radius * Math.cos(oppositeAngle);
     let y2 = MIDDLE_Y + radius * Math.sin(oppositeAngle);
-    points.push({x: x2, y:y2, color: getColorForPoint(x2, y2)})
+    points.push({x: x2, y:y2, color: getColorForPoint(x2, y2)});
 
   } else if(combination === 'Tetradic'){
     let newAngle = angle + Math.PI;
     let x2 = MIDDLE_X + radius * Math.cos(newAngle);
     let y2 = MIDDLE_Y + radius * Math.sin(newAngle);
-    points.push({x: x2, y:y2, color: getColorForPoint(x2, y2)})
+    points.push({x: x2, y:y2, color: getColorForPoint(x2, y2)});
     newAngle = angle + Math.PI/2;
     x2 = MIDDLE_X + radius * Math.cos(newAngle);
     y2 = MIDDLE_Y + radius * Math.sin(newAngle);
-    points.push({x: x2, y:y2, color: getColorForPoint(x2, y2)})
+    points.push({x: x2, y:y2, color: getColorForPoint(x2, y2)});
     newAngle = angle - Math.PI/2;
     x2 = MIDDLE_X + radius * Math.cos(newAngle);
     y2 = MIDDLE_Y + radius * Math.sin(newAngle);
-    points.push({x: x2, y:y2, color: getColorForPoint(x2, y2)})
+    points.push({x: x2, y:y2, color: getColorForPoint(x2, y2)});
 
   } else if(combination === 'Triadic'){
     let newAngle = angle + (2*Math.PI)/3;
     let x2 = MIDDLE_X + radius * Math.cos(newAngle);
     let y2 = MIDDLE_Y + radius * Math.sin(newAngle);
-    points.push({x: x2, y:y2, color: getColorForPoint(x2, y2)})
+    points.push({x: x2, y:y2, color: getColorForPoint(x2, y2)});
     newAngle = angle - (2*Math.PI)/3;
     x2 = MIDDLE_X + radius * Math.cos(newAngle);
     y2 = MIDDLE_Y + radius * Math.sin(newAngle);
-    points.push({x: x2, y:y2, color: getColorForPoint(x2, y2)})
+    points.push({x: x2, y:y2, color: getColorForPoint(x2, y2)});
   } else if(combination === 'Analogous'){
     let newAngle = angle + Math.PI/6;
     let x2 = MIDDLE_X + radius * Math.cos(newAngle);
     let y2 = MIDDLE_Y + radius * Math.sin(newAngle);
-    points.push({x: x2, y:y2, color: getColorForPoint(x2, y2)})
+    points.push({x: x2, y:y2, color: getColorForPoint(x2, y2)});
     newAngle = angle - Math.PI/6;
     x2 = MIDDLE_X + radius * Math.cos(newAngle);
     y2 = MIDDLE_Y + radius * Math.sin(newAngle);
-    points.push({x: x2, y:y2, color: getColorForPoint(x2, y2)})
+    points.push({x: x2, y:y2, color: getColorForPoint(x2, y2)});
   }
 
   points.forEach((point)  =>{
-    drawSecondaryPoint(point.x, point.y)
+    drawSecondaryPoint(point.x, point.y);
   })
-  drawCombinationColors(points)
+  drawCombinationColors(points);
 }
 
 /**
@@ -138,8 +145,8 @@ function drawMainPoint(x, y){
 }
 
 export function redrawPoints(){
-  drawMainPoint(current_point.x, current_point.y)
-  drawCombination(current_point.x, current_point.y)
+  drawMainPoint(current_point.x, current_point.y);
+  drawCombination(current_point.x, current_point.y);
 }
 
 function drawSecondaryPoint(x, y){
@@ -184,10 +191,10 @@ export function drawInstructions() {
 export function drawMousePosition(x, y) {
   if (!ctx) throw new Error('Context not found, please call setContext().');
   if(getDistanceFromCenter(x,y) >100* SCALE){
-    return 
+    return ;
   }
-  drawMainPoint(x, y)
-  drawCombination(x,y)
+  drawMainPoint(x, y);
+  drawCombination(x,y);
 }
 
 /**
@@ -228,15 +235,17 @@ function drawCombinationColors(points){
 
 function setHexInputToRGB(rgb){
   const hls_input = document.getElementById('hex-input');
-  hls_input.value = '#' + rgbToHex(rgb)
+  hls_input.value = '#' + rgbToHex(rgb);
 }
 
 function setRGBinputsToHex(hex){
-  const hsl = hexToHSL(hex)
-  const rgb = hslToRgb(hsl)
-  document.getElementById('color-r').value = rgb.r
-  document.getElementById('color-g').value = rgb.r
-  document.getElementById('color-b').value = rgb.r
+  const hsl = hexToHSL(hex);
+  hsl.l /= 100;
+  hsl.s /= 100;
+  const rgb = hslToRgb(hsl);
+  document.getElementById('color-r').value =Math.floor(rgb.r);
+  document.getElementById('color-g').value = Math.floor(rgb.g);
+  document.getElementById('color-b').value = Math.floor(rgb.b);
 }
 
 /**
