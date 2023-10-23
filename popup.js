@@ -1,6 +1,7 @@
-const WIDTH = 800;
-const HEIGHT = 600;
-const SCALE = 2;
+const WIDTH = 700;
+const HEIGHT = 400;
+
+const SCALE = 1.8;
 const MIDDLE_X = WIDTH / 2;
 const MIDDLE_Y = HEIGHT / 2;
 
@@ -9,19 +10,58 @@ const LIGHTNESS = 0.5;
 let ctx;
 
 let current_point = {}
+let points = []
 
-/**
- * Stores the canvas context passed by the html page in the module for later use.
- * @param context The canvas 2D context
- */
-export function setContext(context) {
+
+var slider = document.getElementById("mySlider");
+        
+    slider.oninput = lightnessSliderChange
+    const canvas = document.getElementById('canvas');
+    console.log('asas')
+    setContext(canvas.getContext('2d'));
+
+    drawColorWheel();
+    drawInstructions();
+
+
+    const rgb_inputs = document.querySelectorAll('.rgb-input');
+    for (let i = 0; i < rgb_inputs.length; i++) {
+      rgb_inputs[i].addEventListener('input', (event) =>{
+        const rgb = {}
+        rgb.r = document.getElementById('color-r').value
+        rgb.g = document.getElementById('color-g').value
+        rgb.b = document.getElementById('color-b').value
+        getPointFromRGB(rgb)
+      });
+    }
+
+    const hls_input = document.getElementById('hex-input')
+    hls_input.addEventListener('input', (event)=>{
+      getPointFromHEX(event.target.value)
+    })
+
+    canvas.addEventListener('click', (event) => {
+      drawPickedColor(event.offsetX, event.offsetY);
+      drawMousePosition(event.offsetX, event.offsetY);
+    });
+
+    const combination_select = document.getElementById('combination-input') 
+
+    combination_select.addEventListener('change' , (event)=>{
+      redrawPoints()
+    })
+
+
+ function setContext(context) {
   ctx = context;
 }
+
+
 
 /**
  * Draws the color wheel at the center of the canvas.
  */
-export function drawColorWheel() {
+ function drawColorWheel() {
   if (!ctx) throw new Error('Context not found, please call setContext().');
 
   // A circle has 360 degrees, corresponding to all possible hue values (0 - 360)
@@ -46,26 +86,50 @@ export function drawColorWheel() {
   drawColorWheelBorder();
 }
 
-export function getPointFromHEX(hex){
+ function getPointFromHEX(hex){
   if(hex.length < 7){
     return;
   }
   const hsl = hexToHSL(hex);
+  changeSlider(hsl.l)
   const x = MIDDLE_X + Math.cos(degreeToRadian(hsl.h)) * hsl.s * SCALE;
   const y = MIDDLE_Y - Math.sin(degreeToRadian(hsl.h)) * hsl.s * SCALE;
   drawMainPoint(x,y);
+  drawPickedColor(x,y)
   drawCombination(x, y);
+  drawCombinationColors(points)
   setRGBinputsToHex(hex);
+  
 }
 
-export function getPointFromRGB({r, g, b}){
+ function lightnessSliderChange(event){
+  const l = event.target.value
+  var output = document.getElementById("sliderValue");
+  output.innerHTML = l;
+  drawPickedColor(current_point.x, current_point.y)
+  drawCombination(current_point.x, current_point.y)
+  drawCombinationColors(points)
+}
+
+function changeSlider(l) {
+  var slider = document.getElementById("mySlider");
+  slider.value = l
+  var output = document.getElementById("sliderValue");
+  output.innerHTML = slider.value;
+}
+
+ function getPointFromRGB({r, g, b}){
 const hex = rgbToHex({r,g,b});
 setHexInputToRGB({r, g, b});
 const hsl = hexToHSL(hex);
+changeSlider(hsl.l)
   const x = MIDDLE_X + Math.cos(degreeToRadian(hsl.h)) * hsl.s * SCALE;
   const y = MIDDLE_Y - Math.sin(degreeToRadian(hsl.h)) * hsl.s * SCALE;
   drawMainPoint(x,y);
+  drawPickedColor(x,y)
   drawCombination(x, y);
+  drawCombinationColors(points)
+
 }
 
 function drawCombination(x,y){
@@ -73,13 +137,13 @@ function drawCombination(x,y){
   const radius = Math.sqrt(Math.pow(x - MIDDLE_X, 2) + Math.pow(y - MIDDLE_Y, 2));
   const angle = Math.atan2(y - MIDDLE_Y, x - MIDDLE_X);
 
-  const points = [];
+  points = [];
   if(combination === 'Monochromatic'){
     const oppositeAngle = angle;
     let x2 = MIDDLE_X + radius * Math.cos(oppositeAngle);
     let y2 = MIDDLE_Y + radius * Math.sin(oppositeAngle);
     const color = getColorForPoint(x2, y2);
-    color.l += 0.05;
+    color.l += 0.15;
     points.push({x: x2, y:y2, color: color});
 
   }else if(combination === 'Complementary'){
@@ -144,7 +208,7 @@ function drawMainPoint(x, y){
   ctx.stroke();
 }
 
-export function redrawPoints(){
+function redrawPoints(){
   drawMainPoint(current_point.x, current_point.y);
   drawCombination(current_point.x, current_point.y);
 }
@@ -173,14 +237,9 @@ function drawColorWheelBorder() {
 /**
  * Draws the instructions at the bottom of the canvas.
  */
-export function drawInstructions() {
+function drawInstructions() {
   if (!ctx) throw new Error('Context not found, please call setContext().');
 
-  ctx.fillStyle = 'black';
-  ctx.font = '26px Roboto';
-  const instructions = 'Tap anywhere on the wheel';
-  const textWidth = ctx.measureText(instructions).width;
-  ctx.fillText(instructions, MIDDLE_X - Math.floor(textWidth / 2), HEIGHT - 15);
 }
 
 /**
@@ -188,7 +247,7 @@ export function drawInstructions() {
  * @param {number} x The relative horizontal (x) position of the cursor on the canvas
  * @param {number} y The relative vertical (y) position of the cursor on the canvas
  */
-export function drawMousePosition(x, y) {
+function drawMousePosition(x, y) {
   if (!ctx) throw new Error('Context not found, please call setContext().');
   if(getDistanceFromCenter(x,y) >100* SCALE){
     return ;
@@ -202,34 +261,36 @@ export function drawMousePosition(x, y) {
  * @param {number} x The relative horizontal (x) position of the cursor on the canvas
  * @param {number} y The relative vertical (y) position of the cursor on the canvas
  */
-export function drawPickedColor(x, y) {
+function drawPickedColor(x, y) {
   if (!ctx) throw new Error('Context not found, please call setContext().');
   if(getDistanceFromCenter(x,y) >100* SCALE){
     return 
   }
-  ctx.clearRect(10, 10, 160, 280);
+  ctx.clearRect(10, 10, 120, 280);
   const color = getColorForPoint(x, y);
-  ctx.fillStyle = `hsl(${color.h}, ${color.s * 100}%, ${color.l * 100}%)`;
-  ctx.fillRect(10, 10, 160, 60);
+  const slider = document.getElementById("mySlider");
+  color.l = slider.value/100
+  ctx.fillStyle = `hsl(${color.h}, ${color.s * 100}%, ${color.l*100}%)`;
+  ctx.fillRect(10, 10, 120, 60);
   ctx.fillStyle = 'black';
   ctx.font = '14px Roboto';
   const rgb = hslToRgb(color);
-  ctx.fillText(`#${rgbToHex(rgb)}`, 60, 45);
+  ctx.fillText(`#${rgbToHex(rgb)}`, 45, 45);
   
   drawColorDetails(color);
 }
 
 function drawCombinationColors(points){
-  ctx.clearRect(10, 70, 160, 280);
+  ctx.clearRect(10, 70, 120, 280);
   for(let i = 0; i < points.length; i++ ){
- 
-    ctx.fillStyle = `hsl(${points[i].color.h}, ${points[i].color.s * 100}%, ${points[i].color.l * 100}%)`;
+    const slider = document.getElementById("mySlider");
+    ctx.fillStyle = `hsl(${points[i].color.h}, ${points[i].color.s * 100}%, ${slider.value}%)`;
 
-    ctx.fillRect(10, 70 + (i * 60), 160, 60);
+    ctx.fillRect(10, 70 + (i * 60), 120, 60);
     ctx.fillStyle = 'black';
     ctx.font = '14px Roboto';
     const rgb = hslToRgb(points[i].color);
-    ctx.fillText(`#${rgbToHex(rgb)}`, 60, 105 + (i * 60));
+    ctx.fillText(`#${rgbToHex(rgb)}`, 45, 105 + (i * 60));
   }
 }
 
@@ -247,7 +308,6 @@ function setRGBinputsToHex(hex){
   document.getElementById('color-g').value = Math.floor(rgb.g);
   document.getElementById('color-b').value = Math.floor(rgb.b);
 }
-
 /**
  * Returns the hsl color for the current cursor position.
  * @param {number} x The relative horizontal (x) position of the cursor on the canvas
@@ -269,8 +329,9 @@ function getColorForPoint(x, y) {
   // Since every x value has 2 possible colors (1 above and 1 below the vertical middle) we need to inverse the hue if
   // the point is lower than the vertical middle. 360 - h is the same as h * -1 (380° - 90° == -90° == 290°) but is
   // better for displaying the hue value.
+  const slider = document.getElementById("mySlider");
   if (y > MIDDLE_Y) h = 360 - h;
-  return {h, s: s / 100, l: LIGHTNESS};
+  return {h, s: s / 100, l: slider.value / 100};
 }
 
 /**
@@ -342,7 +403,7 @@ function rgbToHex({r, g, b}) {
   return `${hexR}${hexG}${hexB}`.toUpperCase();
 }
 
-export function hexToHSL(hex) {
+function hexToHSL(hex) {
 
   hex = hex.replace(/^#/, '');
 

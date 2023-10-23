@@ -6,20 +6,32 @@ body {
   justify-content: center; /* Center horizontally */
   align-items: center;  
   flex-direction: column;
+  width: 600px;
+  max-height: 700px;
+  overflow: hidden;
 }
 
 canvas {
-  width: calc(100% - 6px);
-  max-width: 800px;
-  max-height: 600px;
+  width: 600px;
+  max-width: 700px;
+  max-height: 400px;
   background-color: #fefefe;
-
+  margin: 0;
   border-radius: 25px;
   box-shadow: 3px 3px 6px #888888;
 }
 
+.slider-container {
+  width: 300px;
+  margin-top: 20px;
+  border-radius: 50px
+}
+.slider {
+  width: 100%;
+  border-radius: 50px; /* Задаємо круглий вигляд */
+}
 .settings{
-  width: calc(100% - 6px);
+  width: 600px;
   margin-top: 15px;
   max-width: 800px;
   height: 250px;
@@ -35,7 +47,7 @@ canvas {
 
 .settings label{
   display: block;
-  margin: 15px;
+  margin: 5px;
 }
 .color-input-block{
   display: flex;
