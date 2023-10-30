@@ -1,75 +1,150 @@
-body {
-  background-color: #f8f8f8;
+#wheel-body {
   font-family: Roboto, Sans-serif;
   text-align: center;
   display: flex;
   justify-content: center; /* Center horizontally */
-  align-items: center;  
+  align-items: center;
   flex-direction: column;
-  width: 600px;
-  max-height: 700px;
+  width: 350px;
   overflow: hidden;
+  margin: 0;
 }
 
-canvas {
-  width: 600px;
-  max-width: 700px;
-  max-height: 400px;
-  background-color: #fefefe;
-  margin: 0;
-  border-radius: 25px;
-  box-shadow: 3px 3px 6px #888888;
+#pipette {
+  position: absolute;
+  left: 50px;
+  top: 25px;
+  width: 25px;
+  height: 25px;
+}
+
+#canvas {
+  width: 300px;
+  max-width: 300px;
+  max-height: 300px;
+  margin-top: 5px;
 }
 
 .slider-container {
-  width: 300px;
-  margin-top: 20px;
-  border-radius: 50px
+  width: 310px;
+  margin-top: -65px;
 }
 .slider {
   width: 100%;
   border-radius: 50px; /* Задаємо круглий вигляд */
 }
-.settings{
-  width: 600px;
-  margin-top: 15px;
-  max-width: 800px;
-  height: 250px;
-  background-color: #fefefe;
-  border-radius: 25px;
-  box-shadow: 3px 3px 6px #888888;
+
+#sliderValue {
+  margin-top: -25px;
+}
+
+#colors {
+  height: 120px;
+  width: 400px;
+  margin-top: 10px;
+}
+
+.settings {
+  width: 400px;
+  margin-top: 5px;
+  max-width: 700px;
   text-align: left;
   display: flex;
   flex-direction: column;
   align-items: center;
-  
+  text-align: left;
 }
 
-.settings label{
-  display: block;
+#combination-input {
+  height: 40px;
+  width: 325px;
+  text-align: center;
+}
+
+.label-wrapper {
+  width: 325px;
   margin: 5px;
 }
-.color-input-block{
+
+#hex-block {
+  margin: 5px;
+  justify-content: space-around;
+  width: 330px;
+  display: flex;
+  flex-direction: row;
+}
+
+.settings label {
+  display: inline;
+  margin: 5px;
+}
+.color-input-block {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
-#hex-input{
-  height:  35px;
-  width: 320px;
+#hex-input {
+  height: 35px;
+  margin-top: 2px;
+  width: 260px;
   text-align: center;
 }
 
-.rgb-input-block{
+#hex-circle {
+  height: 45px;
+  width: 45px;
+  border-radius: 50%;
+  background-color: white;
+  font-weight: 900;
+}
+
+#hex-helper-label {
+  position: relative;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  top: 14px;
+  left: 65px;
+  width: 0;
+  font-weight: 600;
+  user-select: none;
+}
+
+#rgb-helper-label {
+  position: relative;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  top: 12px;
+  font-weight: 600;
+  left: 82px;
+  width: 0;
+  user-select: none;
+}
+
+.rgb-input-block {
   display: flex;
   flex-direction: row;
-
 }
 
-.rgb-input{
-  width: 100px;
-  height:  35px;
+#rgb-input {
+  width: 315px;
+  height: 35px;
   text-align: center;
+}
+#hex-colors-block {
+  display: flex;
+  flex-direction: row;
+}
+
+.hex-color-label {
+  display: block;
+  width: 90px;
+  margin-left: 8px;
+  font-size: medium;
+  text-align: center;
+}
+
+.hex-color-label:first-child {
+  margin-left: -3px;
 }
